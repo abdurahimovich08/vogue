@@ -18,36 +18,42 @@ const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize Telegram WebApp
   useEffect(() => {
-    if (WebApp) {
-      WebApp.ready();
-      WebApp.expand();
-      WebApp.enableClosingConfirmation();
-      WebApp.setHeaderColor('#000000');
-      WebApp.setBackgroundColor('#000000');
-    }
+    try {
+      if (WebApp) {
+        WebApp.ready();
+        WebApp.expand();
+        WebApp.enableClosingConfirmation();
+        WebApp.setHeaderColor('#000000');
+        WebApp.setBackgroundColor('#000000');
+      }
 
-    const secureProfile = localStorage.getItem('vogue_vault_p');
-    const secureProducts = localStorage.getItem('vogue_vault_prod');
-    
-    if (secureProfile) {
-      const decrypted = decryptData(secureProfile);
-      if (decrypted) setProfile(JSON.parse(decrypted));
+      const secureProfile = localStorage.getItem('vogue_vault_p');
+      const secureProducts = localStorage.getItem('vogue_vault_prod');
+      
+      if (secureProfile) {
+        const decrypted = decryptData(secureProfile);
+        if (decrypted) {
+          const parsedProfile = JSON.parse(decrypted);
+          setProfile(parsedProfile);
+          setView('DASHBOARD');
+        }
+      }
+      
+      if (secureProducts) {
+        const decrypted = decryptData(secureProducts);
+        if (decrypted) {
+          setProducts(JSON.parse(decrypted));
+        }
+      }
+    } catch (error) {
+      console.error("Initialization error:", error);
+    } finally {
+      // Har qanday holatda ham 1 soniyadan keyin loadingni o'chiramiz
+      setTimeout(() => setIsLoading(false), 1000);
     }
-    
-    if (secureProducts) {
-      const decrypted = decryptData(secureProducts);
-      if (decrypted) setProducts(JSON.parse(decrypted));
-    }
-    
-    setTimeout(() => {
-      setIsLoading(false);
-      if (secureProfile) setView('DASHBOARD');
-    }, 1500);
   }, []);
 
-  // Handle Telegram Back Button
   useEffect(() => {
     if (!WebApp) return;
 
@@ -94,8 +100,8 @@ const App: React.FC = () => {
     return (
       <div className="h-screen bg-black flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">
-          <div className="w-16 h-16 border-4 border-white/5 border-t-blue-500 rounded-full animate-spin"></div>
-          <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.5em] animate-pulse">Vogue Shield Initializing</p>
+          <div className="w-12 h-12 border-2 border-white/5 border-t-blue-500 rounded-full animate-spin"></div>
+          <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.5em] animate-pulse">VogueAI Seller Loading</p>
         </div>
       </div>
     );
@@ -108,7 +114,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-black text-white select-none overflow-hidden font-sans">
       <div className="max-w-screen-xl mx-auto h-screen relative">
-        <div className="h-full w-full transition-all duration-700 ease-in-out">
+        <div className="h-full w-full transition-all duration-700 ease-in-out overflow-y-auto custom-scrollbar">
           {view === 'DASHBOARD' && (
             <Dashboard 
               profile={profile!} 
@@ -140,13 +146,13 @@ const App: React.FC = () => {
           )}
 
           {view === 'MARKETPLACE' && (
-            <div className="h-full overflow-y-auto p-8 pb-32 custom-scrollbar bg-white text-black">
+            <div className="h-full p-8 pb-32 bg-white text-black">
                <Marketplace products={products} />
             </div>
           )}
 
           {view === 'GALLERY' && (
-            <div className="h-full overflow-y-auto p-8 pb-32 custom-scrollbar">
+            <div className="h-full p-8 pb-32">
                <Gallery images={products.map(p => ({
                  id: p.id,
                  originalUrl: p.originalImageUrl,
