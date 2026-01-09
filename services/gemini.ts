@@ -3,7 +3,15 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Product, UserMeasurements, ClothingSize, GenerationConfig, ModelVibe, ProductCategory } from "../types";
 import { sanitizeInput } from "./security";
 
-const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Centralized AI client getter with error handling
+const getAI = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.error("CRITICAL: API_KEY is missing via process.env.API_KEY");
+    throw new Error("Tizim sozlanmagan: API Kaliti topilmadi (Vercel Environment Variables).");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 /**
  * MASTER PHOTOGRAPHER GUIDELINES:
@@ -134,7 +142,7 @@ export const generateModelShot = async (
   isHighQuality: boolean, 
   personBase64?: string
 ): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = getAI();
   const model = isHighQuality ? 'gemini-3-pro-image-preview' : 'gemini-2.5-flash-image';
   
   const parts: any[] = [

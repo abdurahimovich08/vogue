@@ -50,11 +50,15 @@ const Uploader: React.FC<UploaderProps> = ({ onSuccess }) => {
 
     try {
       if (isHighQuality) {
-        // As per guidelines, check for selected API key when using high-quality models
+        // Safe check for AI Studio environment (Project IDX)
+        // This prevents crashes on Vercel where window.aistudio is undefined
         // @ts-ignore
-        if (!(await window.aistudio.hasSelectedApiKey())) {
-          // @ts-ignore
-          await window.aistudio.openSelectKey();
+        if (typeof window !== 'undefined' && window.aistudio && window.aistudio.hasSelectedApiKey) {
+           // @ts-ignore
+           if (!(await window.aistudio.hasSelectedApiKey())) {
+             // @ts-ignore
+             await window.aistudio.openSelectKey();
+           }
         }
       }
 
@@ -81,14 +85,20 @@ const Uploader: React.FC<UploaderProps> = ({ onSuccess }) => {
       setClothPreview(null);
       setPersonPreview(null);
     } catch (err: any) {
+      console.error("Generation Error:", err);
       // Handle API key selection reset if the request fails with "Requested entity was not found"
+      // Only applicable in AI Studio environment
       if (err.message?.includes('Requested entity was not found')) {
         // @ts-ignore
-        await window.aistudio.openSelectKey();
-        setError("Iltimos, API kalitini tanlang va qaytadan 'Create' tugmasini bosing.");
-      } else {
-        setError(err.message || "Rasm yaratishda xatolik yuz berdi. Bu kiyim rasmi juda murakkab bo'lishi mumkin.");
+        if (typeof window !== 'undefined' && window.aistudio) {
+          // @ts-ignore
+          await window.aistudio.openSelectKey();
+          setError("Iltimos, API kalitini tanlang va qaytadan 'Create' tugmasini bosing.");
+          return;
+        }
       }
+      
+      setError(err.message || "Rasm yaratishda xatolik yuz berdi. Internet aloqasi yoki API kalitini tekshiring.");
     } finally {
       setIsGenerating(false);
     }
@@ -237,7 +247,6 @@ const Uploader: React.FC<UploaderProps> = ({ onSuccess }) => {
                     <div>
                       <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Atmosfera</label>
                       <div className="grid grid-cols-2 gap-2">
-                        {/* Cast Object.values to ModelVibe[] to fix type unknown error on line 239 */}
                         {(Object.values(ModelVibe) as ModelVibe[]).map((v) => (
                           <button key={v} onClick={() => setConfig({...config, vibe: v})} className={`py-3 px-3 rounded-xl text-[10px] font-bold transition-all border ${config.vibe === v ? 'bg-black text-white border-black' : 'bg-white border-gray-100 text-gray-400'}`}>{v}</button>
                         ))}
