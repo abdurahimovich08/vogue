@@ -131,20 +131,20 @@ const ShopAssistant: React.FC<ShopAssistantProps> = ({ onBack, onProductListed }
 
   return (
     <div className="flex flex-col h-screen bg-black text-white animate-apple">
-      {/* Apple-style Header */}
-      <div className="px-6 py-12 apple-blur sticky top-0 z-50 flex items-center justify-between border-b border-white/[0.05]">
-        <button onClick={onBack} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center active:scale-90 transition-transform">
+      {/* Header */}
+      <div className="px-6 py-10 apple-blur sticky top-0 z-50 flex items-center justify-between border-b border-white/[0.05]">
+        <button onClick={onBack} className="w-11 h-11 bg-white/5 rounded-full flex items-center justify-center active:scale-90 transition-transform border border-white/5">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
         </button>
         <div className="text-center">
-           <p className="text-[10px] font-black tracking-[0.3em] text-[#0A84FF] uppercase">AI Production</p>
-           <h2 className="text-sm font-bold tracking-tight">Vogue Intelligence</h2>
+           <p className="text-[10px] font-black tracking-[0.4em] text-[#0A84FF] uppercase">AI Production</p>
+           <h2 className="text-sm font-bold">Vogue Intelligence</h2>
         </div>
-        <div className="w-10"></div>
+        <div className="w-11"></div>
       </div>
 
-      {/* Chat Flow */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-8 space-y-10 custom-scrollbar pb-32">
+      {/* Messages */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 py-8 space-y-10 no-scrollbar pb-40">
         {messages.map((m) => (
           <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-apple`}>
             <div className={`max-w-[85%] space-y-4`}>
@@ -154,31 +154,31 @@ const ShopAssistant: React.FC<ShopAssistantProps> = ({ onBack, onProductListed }
                 </div>
               )}
               
-              <div className={`px-6 py-4 rounded-[24px] text-sm leading-relaxed ${m.role === 'user' ? 'bg-[#0A84FF] text-white' : 'bg-[#1C1C1E] text-white/90 border border-white/[0.03]'}`}>
+              <div className={`px-6 py-4 rounded-[24px] text-sm leading-relaxed ${m.role === 'user' ? 'bg-[#0A84FF] text-white' : 'bg-[#1C1C1E] text-white/90 border border-white/[0.05]'}`}>
                 {m.content}
               </div>
 
               {m.type === 'form' && (
-                <div className="apple-card p-8 space-y-8 shadow-2xl border border-white/[0.05]">
+                <div className="apple-card p-8 space-y-8 shadow-2xl">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">Product Name</label>
-                      <input id={`name-${m.id}`} defaultValue={m.data.name} className="w-full bg-white/5 p-4 rounded-2xl text-xs font-bold outline-none border border-white/5 focus:border-[#0A84FF] transition-colors" />
+                      <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-1">Name</label>
+                      <input id={`name-${m.id}`} defaultValue={m.data.name} className="w-full bg-white/5 p-4 rounded-2xl text-xs font-bold outline-none border border-white/5 focus:border-[#0A84FF] transition-all" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">Price ($)</label>
-                      <input id={`price-${m.id}`} type="number" defaultValue={m.data.suggestedPrice} className="w-full bg-white/5 p-4 rounded-2xl text-xs font-bold outline-none border border-white/5 focus:border-[#0A84FF] transition-colors" />
+                      <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-1">Price ($)</label>
+                      <input id={`price-${m.id}`} type="number" defaultValue={m.data.suggestedPrice} className="w-full bg-white/5 p-4 rounded-2xl text-xs font-bold outline-none border border-white/5 focus:border-[#0A84FF] transition-all" />
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-2">Sizes Selection</label>
+                    <label className="text-[9px] font-black text-white/20 uppercase tracking-widest ml-1">Sizes</label>
                     <div className="grid grid-cols-6 gap-2">
                       {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map(sz => (
                         <button 
                           key={sz}
                           onClick={() => selectedSizes.includes(sz) ? setSelectedSizes(selectedSizes.filter(s => s !== sz)) : setSelectedSizes([...selectedSizes, sz])}
-                          className={`py-3 rounded-xl text-[10px] font-black transition-all ${selectedSizes.includes(sz) ? 'bg-white text-black' : 'bg-white/5 text-white/40'}`}
+                          className={`py-3 rounded-xl text-[10px] font-black transition-all ${selectedSizes.includes(sz) ? 'bg-white text-black' : 'bg-white/5 text-white/30'}`}
                         >
                           {sz}
                         </button>
@@ -198,15 +198,15 @@ const ShopAssistant: React.FC<ShopAssistantProps> = ({ onBack, onProductListed }
                     }} 
                     className="w-full py-5 bg-white text-black rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] active:scale-95 transition-all shadow-xl"
                   >
-                    Generate Visuals & List
+                    Finish Production
                   </button>
                 </div>
               )}
 
               {m.type === 'comparison' && (
-                <div className="flex gap-4 w-full max-w-sm">
-                   <div className="rounded-2xl overflow-hidden border border-white/5 opacity-40 flex-1"><img src={m.data.original} className="w-full aspect-[3/4] object-cover" /></div>
-                   <div className="rounded-2xl overflow-hidden border border-[#0A84FF] flex-1 shadow-[0_0_30px_rgba(10,132,255,0.2)]"><img src={m.data.generated} className="w-full aspect-[3/4] object-cover" /></div>
+                <div className="flex gap-4 w-full">
+                   <div className="rounded-2xl overflow-hidden border border-white/10 opacity-40 flex-1"><img src={m.data.original} className="w-full aspect-[3/4] object-cover" /></div>
+                   <div className="rounded-2xl overflow-hidden border border-[#0A84FF] flex-1 shadow-[0_0_40px_rgba(10,132,255,0.25)]"><img src={m.data.generated} className="w-full aspect-[3/4] object-cover" /></div>
                 </div>
               )}
             </div>
@@ -215,17 +215,19 @@ const ShopAssistant: React.FC<ShopAssistantProps> = ({ onBack, onProductListed }
         {isTyping && <div className="p-4 text-[10px] font-black text-[#0A84FF] animate-pulse uppercase tracking-widest">Processing Intelligence...</div>}
       </div>
 
-      {/* Input Section */}
+      {/* Input Bar */}
       <div className="p-8 apple-blur border-t border-white/[0.05] fixed bottom-0 left-0 right-0">
-        <div className="max-w-2xl mx-auto flex items-center gap-4">
+        <div className="max-w-3xl mx-auto flex items-center gap-4">
           <input type="file" ref={fileInputRef} className="hidden" onChange={handleUpload} />
-          <button onClick={() => fileInputRef.current?.click()} className="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all border border-white/5">
+          <button onClick={() => fileInputRef.current?.click()} className="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all border border-white/10 shadow-xl">
             <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
           </button>
           <div className="flex-1 bg-white/5 rounded-full px-6 py-4 border border-white/10 text-white/20 text-sm font-medium">
             Upload garment photo...
           </div>
-          <button className="w-14 h-14 bg-[#0A84FF] rounded-full flex items-center justify-center shadow-xl active:scale-90 transition-all"><svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 12h14M12 5l7 7-7 7" /></svg></button>
+          <button className="w-14 h-14 bg-[#0A84FF] rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition-all">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 12h14M12 5l7 7-7 7" /></svg>
+          </button>
         </div>
       </div>
     </div>

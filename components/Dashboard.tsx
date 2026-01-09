@@ -10,95 +10,121 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ profile, products, onNavigate }) => {
   const totalStock = products.reduce((acc, p) => acc + p.variants.reduce((a, b) => a + b.stock, 0), 0);
+  const totalValue = products.reduce((acc, p) => acc + (p.price * p.variants.reduce((a, b) => a + b.stock, 0)), 0);
 
   return (
-    <div className="min-h-screen bg-black px-6 pt-16 pb-32 animate-apple overflow-y-auto custom-scrollbar">
-      {/* Premium Header */}
-      <header className="flex items-end justify-between mb-12">
-        <div className="space-y-1">
-          <p className="text-[10px] font-black tracking-[0.3em] text-white/30 uppercase">Design Studio</p>
-          <h1 className="text-4xl font-extrabold tracking-tight">{profile.shopName}</h1>
+    <div className="min-h-screen bg-[#FDFCFE] text-[#1C1B1F] px-6 pt-12 pb-32 animate-apple">
+      {/* M3 Top App Bar Simulation */}
+      <header className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-[#6750A4] flex items-center justify-center text-white shadow-md">
+            {profile.logoUrl ? (
+              <img src={profile.logoUrl} className="w-full h-full rounded-full object-cover" alt="Logo" />
+            ) : (
+              <span className="text-xl font-medium">{profile.shopName[0]}</span>
+            )}
+          </div>
+          <div>
+            <p className="text-xs text-[#49454F] font-medium">Xush kelibsiz,</p>
+            <h1 className="text-xl font-bold tracking-tight">{profile.shopName}</h1>
+          </div>
         </div>
-        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#2C2C2E] to-[#1C1C1E] border border-white/5 flex items-center justify-center shadow-2xl">
-          <span className="text-lg font-bold text-white/40">{profile.shopName[0]}</span>
-        </div>
+        <button 
+          onClick={() => onNavigate('PROFILE')}
+          className="p-3 rounded-full hover:bg-black/5 transition-colors"
+        >
+          <svg className="w-6 h-6 text-[#49454F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </button>
       </header>
 
-      {/* Bento Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        {/* Main Action Widget */}
+      {/* Stats Grid - Material 3 Elevated Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="bg-[#F3EDF7] p-6 rounded-[28px] shadow-sm flex flex-col justify-between h-40 border border-[#CAC4D0]">
+          <div className="flex justify-between items-start">
+            <span className="text-sm font-medium text-[#49454F]">Umumiy Savdo</span>
+            <div className="p-2 bg-[#EADDFF] rounded-xl text-[#21005D]">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+          </div>
+          <div>
+            <p className="text-3xl font-bold">${totalValue.toLocaleString()}</p>
+            <p className="text-xs text-[#49454F] mt-1">+12% o'tgan oydan</p>
+          </div>
+        </div>
+
+        <div className="bg-[#F3EDF7] p-6 rounded-[28px] shadow-sm flex flex-col justify-between h-40 border border-[#CAC4D0]">
+          <div className="flex justify-between items-start">
+            <span className="text-sm font-medium text-[#49454F]">Bugungi Buyurtmalar</span>
+            <div className="p-2 bg-[#EADDFF] rounded-xl text-[#21005D]">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 11-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+            </div>
+          </div>
+          <div>
+            <p className="text-3xl font-bold">14</p>
+            <p className="text-xs text-[#49454F] mt-1">Hozirda faol</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Actions - M3 Tonal Buttons/Cards */}
+      <div className="space-y-4">
         <div 
           onClick={() => onNavigate('AI_ASSISTANT')}
-          className="col-span-2 apple-card h-64 p-8 relative overflow-hidden group cursor-pointer shadow-2xl border border-white/[0.03]"
+          className="bg-[#6750A4] p-8 rounded-[28px] text-white flex items-center justify-between cursor-pointer shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
         >
-          <div className="absolute top-0 right-0 w-80 h-80 bg-[#0A84FF]/10 rounded-full blur-[80px] -translate-y-20 translate-x-20 group-hover:scale-125 transition-transform duration-1000"></div>
-          <div className="relative z-10 h-full flex flex-col justify-between">
-            <div className="w-16 h-16 bg-[#0A84FF] rounded-2xl flex items-center justify-center shadow-[0_0_40px_rgba(10,132,255,0.3)]">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
-            </div>
-            <div>
-              <h2 className="text-2xl font-black mb-1">New Production</h2>
-              <p className="text-white/30 text-xs font-semibold uppercase tracking-widest">AI Fashion Generation</p>
-            </div>
+          <div>
+            <h2 className="text-2xl font-bold mb-2">Mahsulot qo'shish</h2>
+            <p className="text-white/70 text-sm">AI yordamida professional rasm va tavsif yarating</p>
+          </div>
+          <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" /></svg>
           </div>
         </div>
 
-        {/* Inventory Widget */}
-        <div 
-          onClick={() => onNavigate('INVENTORY')}
-          className="col-span-1 apple-card h-48 p-6 flex flex-col justify-between cursor-pointer border border-white/[0.03]"
-        >
-          <div className="flex justify-between items-start">
-            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center">
-               <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        <div className="grid grid-cols-2 gap-4">
+          <div 
+            onClick={() => onNavigate('INVENTORY')}
+            className="bg-white p-6 rounded-[28px] border border-[#CAC4D0] cursor-pointer hover:bg-[#F3EDF7] transition-colors"
+          >
+            <div className="w-12 h-12 bg-[#E8DEF8] text-[#1D192B] rounded-2xl flex items-center justify-center mb-4">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
             </div>
-            <div className="text-right">
-              <p className="text-2xl font-black">{products.length}</p>
-              <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">Items</p>
-            </div>
+            <h3 className="font-bold">Ombor</h3>
+            <p className="text-xs text-[#49454F]">{products.length} ta mahsulot</p>
           </div>
-          <p className="text-sm font-bold text-white/80">Inventory</p>
-        </div>
 
-        {/* Stock Status Widget */}
-        <div className="col-span-1 apple-card h-48 p-6 flex flex-col justify-between border border-white/[0.03]">
-          <div className="flex justify-between items-start">
-            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center">
-               <svg className="w-6 h-6 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+          <div 
+            onClick={() => onNavigate('ANALYTICS')}
+            className="bg-white p-6 rounded-[28px] border border-[#CAC4D0] cursor-pointer hover:bg-[#F3EDF7] transition-colors"
+          >
+            <div className="w-12 h-12 bg-[#E8DEF8] text-[#1D192B] rounded-2xl flex items-center justify-center mb-4">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
             </div>
-            <div className="text-right">
-              <p className="text-2xl font-black">{totalStock}</p>
-              <p className="text-[8px] font-black text-white/20 uppercase tracking-widest">Units</p>
+            <h3 className="font-bold">Hisobotlar</h3>
+            <p className="text-xs text-[#49454F]">Savdo tahlili</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Access Grid */}
+      <div className="mt-8">
+        <h3 className="text-sm font-bold text-[#49454F] uppercase tracking-wider mb-4 ml-2">Tezkor havolalar</h3>
+        <div className="space-y-3">
+          <div 
+            onClick={() => onNavigate('MARKETPLACE')}
+            className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-[#CAC4D0] cursor-pointer active:bg-[#F3EDF7]"
+          >
+            <div className="w-10 h-10 rounded-full bg-[#EADDFF] flex items-center justify-center text-[#21005D]">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
             </div>
+            <div className="flex-1">
+              <p className="font-bold text-sm">Marketplace-ni ko'rish</p>
+              <p className="text-[10px] text-[#49454F]">Do'koningiz tashqaridan qanday ko'rinadi</p>
+            </div>
+            <svg className="w-5 h-5 text-[#49454F]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
           </div>
-          <p className="text-sm font-bold text-white/80">Total Stock</p>
-        </div>
-
-        {/* Gallery Card */}
-        <div 
-          onClick={() => onNavigate('GALLERY')}
-          className="col-span-2 apple-card p-6 flex items-center gap-6 cursor-pointer border border-white/[0.03]"
-        >
-          <div className="flex -space-x-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="w-12 h-12 rounded-2xl bg-[#2C2C2E] border-2 border-black flex items-center justify-center overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-tr from-white/5 to-white/10 animate-pulse"></div>
-              </div>
-            ))}
-          </div>
-          <div className="flex-1">
-            <p className="text-xs font-black uppercase tracking-widest text-white/30">Media Library</p>
-            <p className="text-sm font-bold">Generated Assets</p>
-          </div>
-          <svg className="w-5 h-5 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
-        </div>
-
-        {/* Marketplace Shortcut */}
-        <div 
-          onClick={() => onNavigate('MARKETPLACE')}
-          className="col-span-2 py-6 px-8 rounded-full bg-white text-black font-black text-xs uppercase tracking-[0.2em] text-center mt-4 active:scale-95 transition-all shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
-        >
-          Enter Marketplace
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ export interface ProductVariant {
 }
 
 export interface ProductAttributes {
-  color: string; // Base color
+  color: string;
   availableColors: string[];
   season: 'Summer' | 'Winter' | 'Spring/Autumn' | 'All-season';
   gender: 'Male' | 'Female' | 'Unisex';
@@ -21,7 +21,9 @@ export interface ShopProfile {
   shopName: string;
   phone: string;
   address: string;
+  logoUrl?: string;
   registeredAt: number;
+  email?: string;
 }
 
 export interface ProductStats {
@@ -53,7 +55,7 @@ export interface Product {
   description: string;
   category: ProductCategory;
   attributes: ProductAttributes;
-  variants: ProductVariant[]; // Detailed stock per size/color
+  variants: ProductVariant[];
   timestamp: number;
   status: 'Pending' | 'Approved' | 'Rejected';
   stats: ProductStats;
@@ -85,4 +87,4 @@ export interface GeneratedImage {
   isFittingRoom: boolean;
 }
 
-export type AppView = 'REGISTRATION' | 'DASHBOARD' | 'AI_ASSISTANT' | 'ANALYTICS' | 'MARKETPLACE' | 'GALLERY' | 'INVENTORY';
+export type AppView = 'REGISTRATION' | 'DASHBOARD' | 'AI_ASSISTANT' | 'ANALYTICS' | 'MARKETPLACE' | 'GALLERY' | 'INVENTORY' | 'PROFILE';

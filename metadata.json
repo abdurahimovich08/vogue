@@ -1,8 +1,9 @@
 {
-  "name": "Soqqachilar Seller",
-  "description": "An AI-powered fashion platform for shop owners to transform flat clothing photos into professional model-worn studio shots.",
   "requestFramePermissions": [
     "camera",
+    "microphone",
     "geolocation"
-  ]
+  ],
+  "name": "",
+  "description": ""
 }
