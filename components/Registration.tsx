@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ShopProfile } from '../types';
-import { reverseGeocode } from '../services/gemini';
+import { authService } from '../services/auth';
 
 interface RegistrationProps {
   onRegister: (data: ShopProfile) => void;
@@ -13,6 +13,8 @@ const Registration: React.FC<RegistrationProps> = ({ onRegister }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({ shopName: '', phone: '', address: '' });
   const [isLocating, setIsLocating] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [googleProfile, setGoogleProfile] = useState<Partial<ShopProfile>>({});
 
   useEffect(() => {
     if (WebApp?.initDataUnsafe?.user) {
@@ -24,18 +26,48 @@ const Registration: React.FC<RegistrationProps> = ({ onRegister }) => {
     }
   }, []);
 
-  const handleGetLocation = () => {
-    if (!navigator.geolocation) return;
+  // Auto-detect location when entering Step 2
+  useEffect(() => {
+    if (step === 2) {
+      handleAutoLocation();
+    }
+  }, [step]);
+
+  const handleAutoLocation = async () => {
     setIsLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      async (p) => {
-        try {
-          const addr = await reverseGeocode(p.coords.latitude, p.coords.longitude);
-          setFormData(prev => ({ ...prev, address: addr }));
-        } finally { setIsLocating(false); }
-      },
-      () => setIsLocating(false)
-    );
+    try {
+      const detectedAddress = await authService.detectLocation();
+      setFormData(prev => ({ ...prev, address: detectedAddress }));
+    } catch (e) {
+      console.error("Geo-detection failed", e);
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
+  const handleContinueWithGoogle = async () => {
+    setIsAuthenticating(true);
+    try {
+      // Trigger simulated Google Sign-In
+      const profile = await authService.loginWithGoogle(formData.shopName);
+      
+      setGoogleProfile(profile);
+      
+      // If user is already fully registered (has address/phone), skip to dashboard
+      // Note: In a real app we'd check specific fields. Here we assume if they exist in DB they are good.
+      const existingDbRecord = await authService.getCurrentUser();
+      if (existingDbRecord && existingDbRecord.email === profile.email && existingDbRecord.address) {
+         onRegister(existingDbRecord);
+         return;
+      }
+      
+      setStep(2);
+    } catch (error) {
+      console.error("Google Auth Failed", error);
+      alert("Google Sign-In failed. Please try again.");
+    } finally {
+      setIsAuthenticating(false);
+    }
   };
 
   return (
@@ -66,11 +98,17 @@ const Registration: React.FC<RegistrationProps> = ({ onRegister }) => {
                 />
               </div>
               <button 
-                disabled={!formData.shopName}
-                onClick={() => setStep(2)}
-                className="w-full py-6 bg-white text-black rounded-[24px] font-black uppercase tracking-[0.2em] text-xs active:scale-95 transition-all disabled:opacity-10 shadow-2xl"
+                disabled={!formData.shopName || isAuthenticating}
+                onClick={handleContinueWithGoogle}
+                className="w-full py-6 bg-white text-black rounded-[24px] font-black uppercase tracking-[0.2em] text-xs active:scale-95 transition-all disabled:opacity-50 shadow-2xl flex items-center justify-center gap-3"
               >
-                Continue
+                {isAuthenticating ? (
+                  <span>Connecting to Google...</span>
+                ) : (
+                  <>
+                    <span>Continue with Google</span>
+                  </>
+                )}
               </button>
             </div>
           ) : (
@@ -89,10 +127,10 @@ const Registration: React.FC<RegistrationProps> = ({ onRegister }) => {
                   <input 
                     placeholder="Location"
                     value={formData.address}
-                    onChange={e => setFormData({...formData, address: e.target.value})}
-                    className="w-full bg-[#1C1C1E] border border-white/[0.03] rounded-[24px] px-8 py-5 text-sm font-bold outline-none pr-16" 
+                    readOnly
+                    className="w-full bg-[#1C1C1E] border border-white/[0.03] rounded-[24px] px-8 py-5 text-sm font-bold outline-none pr-16 text-white/50 cursor-not-allowed" 
                   />
-                  <button onClick={handleGetLocation} className={`absolute right-5 top-1/2 -translate-y-1/2 text-[#0A84FF] ${isLocating && 'animate-pulse'}`}>
+                  <button onClick={handleAutoLocation} className={`absolute right-5 top-1/2 -translate-y-1/2 text-[#0A84FF] ${isLocating && 'animate-pulse'}`}>
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>
                   </button>
                 </div>
@@ -100,7 +138,14 @@ const Registration: React.FC<RegistrationProps> = ({ onRegister }) => {
               <div className="flex gap-4">
                 <button onClick={() => setStep(1)} className="flex-1 py-6 bg-white/5 text-white/40 rounded-[24px] font-black uppercase tracking-widest text-[9px] border border-white/5">Back</button>
                 <button 
-                  onClick={() => onRegister({ ...formData, registeredAt: Date.now() })}
+                  onClick={() => onRegister({ 
+                    ...formData, 
+                    ...googleProfile,
+                    address: formData.address, // Ensure current form address is used
+                    phone: formData.phone,
+                    shopName: formData.shopName,
+                    registeredAt: Date.now() 
+                  } as ShopProfile)}
                   className="flex-[2] py-6 bg-[#0A84FF] text-white rounded-[24px] font-black uppercase tracking-[0.2em] text-[10px] shadow-[0_20px_40px_rgba(10,132,255,0.2)] active:scale-95 transition-all"
                 >
                   Start Studio

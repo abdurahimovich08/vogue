@@ -24,6 +24,9 @@ export interface ShopProfile {
   logoUrl?: string;
   registeredAt: number;
   email?: string;
+  role?: 'SELLER' | 'BUYER' | 'ADMIN';
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  googleId?: string;
 }
 
 export interface ProductStats {
