@@ -70,7 +70,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ products, onBack }) => {
     myProducts.forEach(p => {
       if (p.stats?.regionalData) {
         Object.entries(p.stats.regionalData).forEach(([region, count]) => {
-          stats[region] = (stats[region] || 0) + count;
+          stats[region] = (stats[region] || 0) + (count as number);
         });
       }
     });
