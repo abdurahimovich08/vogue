@@ -1,5 +1,5 @@
 
-import { Product } from '../types';
+import { Product, ProductCategory } from '../types';
 import { encryptData, decryptData, generateSecureId } from './security';
 
 /**

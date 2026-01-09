@@ -32,6 +32,8 @@ export interface ShopProfile {
 export interface ProductStats {
   views: number;
   likes: number;
+  sales?: number; // Added for Sales Dashboard
+  regionalData?: Record<string, number>; // Added for Regional Analysis
   reviews: { user: string; rating: number; comment: string }[];
 }
 
